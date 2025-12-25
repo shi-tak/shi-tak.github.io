@@ -1,0 +1,133 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 10);
+---
+
+<!doctype html>
+<html lang="ja">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			.home-note h2 {
+				font-size: 1.7rem;
+			}
+			.latest-posts {
+				margin-bottom: 3rem;
+				padding: 2.5rem 2rem;
+				background: rgba(var(--gray-light), 35%);
+				border: 1px solid rgba(var(--gray-light), 80%);
+				border-radius: 14px;
+			}
+			.latest-posts h2 {
+				margin-bottom: 2rem;
+				font-size: 1.5rem;
+				color: rgb(var(--gray));
+			}
+			.post-list {
+				list-style: none;
+				padding: 0;
+				margin: 0;
+				display: flex;
+				flex-direction: column;
+				gap: 2.5rem;
+			}
+			.post-item {
+				padding-bottom: 2.5rem;
+				border-bottom: 1px solid rgba(var(--gray-light), 85%);
+			}
+			.post-item:last-child {
+				padding-bottom: 0;
+				border-bottom: none;
+			}
+			.post-kicker {
+				font-size: 0.75rem;
+				font-weight: 600;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				margin-bottom: 0.75rem;
+				color: rgb(var(--gray));
+			}
+			.post-title {
+				margin-bottom: 0.75rem;
+			}
+			.post-title a {
+				color: rgb(var(--black));
+				text-decoration: none;
+			}
+			.post-title a:hover {
+				color: var(--accent);
+			}
+			.post-meta {
+				display: flex;
+				gap: 1.5rem;
+				align-items: center;
+				font-size: 0.85rem;
+				color: rgb(var(--gray));
+				margin-bottom: 1.25rem;
+			}
+			.post-excerpt {
+				margin-bottom: 1.5rem;
+				color: rgb(var(--gray-dark));
+			}
+			.post-readmore {
+				display: inline-flex;
+				align-items: center;
+				font-weight: 600;
+				color: var(--accent);
+				text-decoration: none;
+			}
+			.post-readmore:hover {
+				color: var(--accent-dark);
+			}
+			@media (max-width: 720px) {
+				.latest-posts {
+					padding: 2rem 1.25rem;
+				}
+				.post-list {
+					gap: 2rem;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<section class="home-note">
+				<h2>ひとこと</h2>
+				<p>もうすぐ年末です。</p>
+			</section>
+			<section class="latest-posts">
+				<h2>最新記事</h2>
+				<ul class="post-list">
+					{
+						posts.map((post) => (
+							<li class="post-item">
+								<h3 class="post-title">
+									<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+								</h3>
+								<div class="post-meta">
+									<span>
+										<FormattedDate date={post.data.pubDate} />
+									</span>
+								</div>
+								<p class="post-excerpt">{post.data.description}</p>
+								<a class="post-readmore" href={`/blog/${post.id}/`}>
+									続きを読む →
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>
